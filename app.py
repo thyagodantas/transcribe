@@ -9,12 +9,11 @@ API_KEY_ASSEMBLYAI = "d38391f3f2844f8189e411f8d7333392"
 # Inicializa o Flask
 app = Flask(__name__)
 
-# Função para baixar o áudio de um vídeo do YouTube usando yt-dlp
 def baixar_audio_youtube(url, output_path="audio.mp3"):
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': output_path,
-        'age_limit': 18,  # Ignorar restrições de idade
+        'cookiefile': './cookies.txt',  # Forneça o caminho para o arquivo de cookies
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
