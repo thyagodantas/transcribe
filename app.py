@@ -3,7 +3,7 @@ import time
 import yt_dlp as youtube_dl
 import os
 
-API_KEY_ASSEMBLYAI = "SUA_CHAVE_API_AQUI"
+API_KEY_ASSEMBLYAI = "d38391f3f2844f8189e411f8d7333392"
 
 # Função para baixar o áudio de um vídeo do YouTube usando yt-dlp
 def baixar_audio_youtube(url, output_path="audio.mp3"):
