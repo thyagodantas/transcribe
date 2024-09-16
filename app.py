@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import os
-import youtube_dl
+import yt_dlp as youtube_dl
 
 # Configure sua chave da API AssemblyAI
 ASSEMBLYAI_API_KEY = 'd38391f3f2844f8189e411f8d7333392'
