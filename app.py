@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 
 # Defina sua chave da API da OpenAI aqui
-openai.api_key = "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"
+openai.api_key = "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"
 
 
 # Função para baixar o áudio de um vídeo do YouTube usando yt-dlp (sem ffmpeg)
@@ -22,25 +22,10 @@ def baixar_audio_youtube(url, output_path="audio.webm"):
     return output_path
 
 # Função para transcrever áudio usando a API da OpenAI
-def transcrever_audio_com_segmentos(audio_file):
+def transcrever_audio_api(audio_file):
     with open(audio_file, "rb") as f:
         transcript = openai.Audio.transcribe("whisper-1", f)
-
-    # Processar a transcrição para incluir os timestamps e formatar o texto
-    transcricao_formatada = ""
-    for segment in transcript['segments']:
-        start_time = segment['start']  # Tempo de início do segmento (em segundos)
-        end_time = segment['end']      # Tempo de término do segmento (em segundos)
-        text = segment['text']         # Texto transcrito
-
-        # Converter os segundos para formato de minutos e segundos
-        start_minutos = int(start_time // 60)
-        start_segundos = int(start_time % 60)
-
-        # Adicionar a transcrição formatada com timestamps
-        transcricao_formatada += f"[{start_minutos:02d}:{start_segundos:02d}] {text}\n"
-    
-    return transcricao_formatada
+    return transcript['text']
 
 # Rota para exibir a página HTML
 @app.route('/')
@@ -59,8 +44,8 @@ def transcrever_video():
         # Baixa o áudio
         audio_file = baixar_audio_youtube(youtube_url)
 
-        # Transcreve o áudio com segmentos e timestamps
-        transcricao = transcrever_audio_com_segmentos(audio_file)
+        # Transcreve o áudio
+        transcricao = transcrever_audio_api(audio_file)
 
         # Remove o arquivo de áudio após a transcrição
         os.remove(audio_file)
@@ -72,4 +57,4 @@ def transcrever_video():
         return render_template('index.html', transcricao=f"Erro: {str(e)}")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8000)  # Especificando a porta 8000
