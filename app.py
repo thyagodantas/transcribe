@@ -2,9 +2,14 @@ import requests
 import time
 import yt_dlp as youtube_dl
 import os
+from flask import Flask, request, render_template
 
 API_KEY_ASSEMBLYAI = "d38391f3f2844f8189e411f8d7333392"
 
+# Inicializa o Flask
+app = Flask(__name__)
+
+# Função para baixar o áudio de um vídeo do YouTube usando yt-dlp
 def baixar_audio_youtube(url, output_path="audio.mp3"):
     ydl_opts = {
         'format': 'bestaudio/best',
@@ -20,8 +25,6 @@ def baixar_audio_youtube(url, output_path="audio.mp3"):
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
     return output_path
-
-
 
 # Função para enviar o áudio para AssemblyAI e transcrever
 def transcrever_audio_assemblyai(audio_file):
@@ -87,3 +90,38 @@ def formatar_transcricao(transcricao_json):
         transcricao_formatada += f"[{start_minutos:02d}:{start_segundos:02d}] {text}\n"
 
     return transcricao_formatada
+
+# Rota principal para exibir o formulário de entrada de URL
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# Rota para processar a URL do vídeo e transcrever o áudio
+@app.route('/transcrever', methods=['POST'])
+def transcrever_video():
+    youtube_url = request.form['youtube_url']
+
+    if not youtube_url:
+        return render_template('index.html', transcricao="Erro: URL não fornecida.")
+
+    try:
+        # Baixar o áudio do vídeo do YouTube
+        audio_file = baixar_audio_youtube(youtube_url)
+
+        # Enviar o áudio para AssemblyAI e obter a transcrição
+        transcricao_json, erro = transcrever_audio_assemblyai(audio_file)
+
+        if erro:
+            return render_template('index.html', transcricao=erro)
+
+        # Formatar a transcrição com timestamps
+        transcricao_formatada = formatar_transcricao(transcricao_json)
+
+        # Exibir a transcrição na página
+        return render_template('index.html', transcricao=transcricao_formatada)
+
+    except Exception as e:
+        return render_template('index.html', transcricao=f"Erro: {str(e)}")
+
+if __name__ == '__main__':
+    app.run(debug=True)

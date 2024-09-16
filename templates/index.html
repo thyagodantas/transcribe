@@ -4,32 +4,60 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Transcrição de Vídeos do YouTube</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 50px;
+        text-align: center;
+        background-color: #f4f4f4;
+      }
+      input[type="text"] {
+        padding: 10px;
+        width: 60%;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+      button {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      pre {
+        text-align: left;
+        background-color: white;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        max-width: 90%;
+        margin: 20px auto;
+        white-space: pre-wrap;
+      }
+    </style>
   </head>
   <body>
-    <div class="container">
-      <h1>Transcrição de Vídeos do YouTube</h1>
-      <form id="transcription-form" method="POST" action="/transcrever">
-        <label for="youtube-url">URL do Vídeo do YouTube:</label>
-        <input
-          type="text"
-          id="youtube-url"
-          name="youtube_url"
-          placeholder="Insira o URL do vídeo"
-          required
-        />
-        <button type="submit">Transcrever</button>
-      </form>
+    <h1>Transcrição de Vídeos do YouTube</h1>
+    <form method="POST" action="/transcrever">
+      <input
+        type="text"
+        id="youtube-url"
+        name="youtube_url"
+        placeholder="Insira o URL do vídeo"
+        required
+      />
+      <br />
+      <button type="submit">Transcrever</button>
+    </form>
 
-      <div id="transcription-result">
-        {% if transcricao %}
-        <h2>Transcrição:</h2>
-        <pre>{{ transcricao }}</pre>
-        {% endif %}
-      </div>
-    </div>
+    {% if transcricao %}
+    <h2>Transcrição:</h2>
+    <pre>{{ transcricao }}</pre>
+    {% endif %}
   </body>
 </html>
