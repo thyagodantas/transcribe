@@ -9,7 +9,6 @@ ASSEMBLYAI_API_KEY = 'd38391f3f2844f8189e411f8d7333392'
 # Configuração do Flask
 app = Flask(__name__)
 
-# Função para baixar o áudio do vídeo do YouTube
 def download_audio_from_youtube(url):
     ydl_opts = {
         'format': 'bestaudio/best',
@@ -25,7 +24,7 @@ def download_audio_from_youtube(url):
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
         return 'audio.mp3'
-
+    
 # Função para enviar o áudio para transcrição
 def upload_audio(file_path):
     headers = {
