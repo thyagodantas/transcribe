@@ -10,16 +10,19 @@ app = Flask(__name__)
 openai.api_key = "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"
 
 
-# Função para baixar o áudio de um vídeo do YouTube usando yt-dlp (sem ffmpeg)
 def baixar_audio_youtube(url, output_path="audio.webm"):
     ydl_opts = {
         'format': 'bestaudio[ext=webm]/bestaudio',
         'outtmpl': output_path,  # Define o caminho de saída
+        'headers': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+        }
     }
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
     return output_path
+
 
 # Função para transcrever áudio usando a API da OpenAI
 def transcrever_audio_api(audio_file):
