@@ -4,60 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Transcrição de Vídeos do YouTube</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 50px;
-        text-align: center;
-        background-color: #f4f4f4;
-      }
-      input[type="text"] {
-        padding: 10px;
-        width: 60%;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-      }
-      button {
-        padding: 10px 20px;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-      button:hover {
-        background-color: #45a049;
-      }
-      pre {
-        text-align: left;
-        background-color: white;
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        max-width: 90%;
-        margin: 20px auto;
-        white-space: pre-wrap;
-      }
-    </style>
   </head>
   <body>
-    <h1>Transcrição de Vídeos do YouTube</h1>
-    <form method="POST" action="/transcrever">
-      <input
-        type="text"
-        id="youtube-url"
-        name="youtube_url"
-        placeholder="Insira o URL do vídeo"
-        required
-      />
-      <br />
+    <h1>Transcrever Vídeo do YouTube</h1>
+    <form action="/transcribe" method="POST">
+      <label for="youtube_link">URL do YouTube:</label>
+      <input type="text" id="youtube_link" name="youtube_link" required />
       <button type="submit">Transcrever</button>
     </form>
-
-    {% if transcricao %}
-    <h2>Transcrição:</h2>
-    <pre>{{ transcricao }}</pre>
-    {% endif %}
   </body>
 </html>
