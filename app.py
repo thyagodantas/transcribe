@@ -13,7 +13,7 @@ def baixar_audio_youtube(url, output_path="audio.mp3"):
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': output_path,
-        'cookiefile': './cookies.txt',  # Forneça o caminho para o arquivo de cookies
+        'force_generic_extractor': True,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
