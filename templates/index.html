@@ -7,10 +7,15 @@
   </head>
   <body>
     <h1>Transcrever Vídeo do YouTube</h1>
-    <form action="/transcribe" method="POST">
-      <label for="youtube_link">URL do YouTube:</label>
-      <input type="text" id="youtube_link" name="youtube_link" required />
+    <form action="/transcrever" method="POST">
+      <label for="youtube_url">URL do YouTube:</label>
+      <input type="text" id="youtube_url" name="youtube_url" required />
       <button type="submit">Transcrever</button>
     </form>
+
+    {% if transcricao %}
+    <h2>Transcrição:</h2>
+    <pre>{{ transcricao }}</pre>
+    {% endif %}
   </body>
 </html>
