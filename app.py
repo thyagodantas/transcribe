@@ -1,23 +1,19 @@
 from flask import Flask, request, render_template
 import yt_dlp as youtube_dl
-import requests
+import openai
 import os
 
 # Inicializa o Flask
 app = Flask(__name__)
 
-# Defina sua chave da API da AssemblyAI aqui
-ASSEMBLYAI_API_KEY = 'd38391f3f2844f8189e411f8d7333392'
+# Defina sua chave da API da OpenAI aqui
+openai.api_key = "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"
 
-# Função para baixar o áudio de um vídeo do YouTube e convertê-lo em MP3 usando yt-dlp
-def baixar_audio_youtube(url, output_path="audio.mp3"):
+
+# Função para baixar o áudio de um vídeo do YouTube usando yt-dlp (sem ffmpeg)
+def baixar_audio_youtube(url, output_path="audio.webm"):
     ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
+        'format': 'bestaudio[ext=webm]/bestaudio',
         'outtmpl': output_path,  # Define o caminho de saída
     }
 
@@ -25,51 +21,26 @@ def baixar_audio_youtube(url, output_path="audio.mp3"):
         ydl.download([url])
     return output_path
 
-# Função para fazer upload do áudio para a AssemblyAI
-def upload_audio(file_path):
-    headers = {
-        'authorization': ASSEMBLYAI_API_KEY
-    }
+# Função para transcrever áudio usando a API da OpenAI
+def transcrever_audio_com_segmentos(audio_file):
+    with open(audio_file, "rb") as f:
+        transcript = openai.Audio.transcribe("whisper-1", f)
 
-    with open(file_path, 'rb') as f:
-        response = requests.post(
-            'https://api.assemblyai.com/v2/upload',
-            headers=headers,
-            files={'file': f}
-        )
+    # Processar a transcrição para incluir os timestamps e formatar o texto
+    transcricao_formatada = ""
+    for segment in transcript['segments']:
+        start_time = segment['start']  # Tempo de início do segmento (em segundos)
+        end_time = segment['end']      # Tempo de término do segmento (em segundos)
+        text = segment['text']         # Texto transcrito
 
-    return response.json().get('upload_url')
+        # Converter os segundos para formato de minutos e segundos
+        start_minutos = int(start_time // 60)
+        start_segundos = int(start_time % 60)
 
-# Função para solicitar transcrição
-def solicitar_transcricao(audio_url):
-    endpoint = "https://api.assemblyai.com/v2/transcript"
-    json_data = {
-        "audio_url": audio_url
-    }
-    headers = {
-        "authorization": ASSEMBLYAI_API_KEY,
-        "content-type": "application/json"
-    }
-
-    response = requests.post(endpoint, json=json_data, headers=headers)
-    return response.json().get('id')
-
-# Função para obter o resultado da transcrição
-def obter_transcricao(transcript_id):
-    endpoint = f"https://api.assemblyai.com/v2/transcript/{transcript_id}"
-    headers = {
-        "authorization": ASSEMBLYAI_API_KEY
-    }
-
-    while True:
-        response = requests.get(endpoint, headers=headers)
-        data = response.json()
-        if data['status'] == 'completed':
-            return data['text']
-        elif data['status'] == 'failed':
-            return "Erro: Falha na transcrição."
-        else:
-            continue  # Aguarda até que a transcrição esteja pronta
+        # Adicionar a transcrição formatada com timestamps
+        transcricao_formatada += f"[{start_minutos:02d}:{start_segundos:02d}] {text}\n"
+    
+    return transcricao_formatada
 
 # Rota para exibir a página HTML
 @app.route('/')
@@ -85,19 +56,13 @@ def transcrever_video():
         return render_template('index.html', transcricao="Erro: URL não fornecida.")
 
     try:
-        # Baixar o áudio
+        # Baixa o áudio
         audio_file = baixar_audio_youtube(youtube_url)
 
-        # Fazer upload do áudio para a AssemblyAI
-        audio_url = upload_audio(audio_file)
+        # Transcreve o áudio com segmentos e timestamps
+        transcricao = transcrever_audio_com_segmentos(audio_file)
 
-        # Solicitar transcrição
-        transcript_id = solicitar_transcricao(audio_url)
-
-        # Obter a transcrição completa
-        transcricao = obter_transcricao(transcript_id)
-
-        # Remover o arquivo de áudio após a transcrição
+        # Remove o arquivo de áudio após a transcrição
         os.remove(audio_file)
 
         # Retorna a transcrição na página
