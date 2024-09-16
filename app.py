@@ -5,11 +5,11 @@ import os
 
 API_KEY_ASSEMBLYAI = "d38391f3f2844f8189e411f8d7333392"
 
-# Função para baixar o áudio de um vídeo do YouTube usando yt-dlp
 def baixar_audio_youtube(url, output_path="audio.mp3"):
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': output_path,
+        'age_limit': 18,  # Ignorar restrições de idade
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
@@ -20,6 +20,8 @@ def baixar_audio_youtube(url, output_path="audio.mp3"):
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
     return output_path
+
+
 
 # Função para enviar o áudio para AssemblyAI e transcrever
 def transcrever_audio_assemblyai(audio_file):
