@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transcrição de Vídeos do YouTube</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Transcrição de Vídeos do YouTube</h1>
+      <form id="transcription-form" method="POST" action="/transcrever">
+        <label for="youtube-url">URL do Vídeo do YouTube:</label>
+        <input
+          type="text"
+          id="youtube-url"
+          name="youtube_url"
+          placeholder="Insira o URL do vídeo"
+          required
+        />
+        <button type="submit">Transcrever</button>
+      </form>
+
+      <div id="transcription-result">
+        {% if transcricao %}
+        <h2>Transcrição:</h2>
+        <pre>{{ transcricao }}</pre>
+        {% endif %}
+      </div>
+    </div>
+  </body>
+</html>
